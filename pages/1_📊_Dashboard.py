@@ -98,6 +98,137 @@ with col4:
     else:
         st.info("No data available")
 
+# Recruiter Leaderboard
+st.markdown("---")
+st.markdown("<h2 style='margin-bottom: 30px;'>🏆 Recruiter Leaderboard</h2>", unsafe_allow_html=True)
+
+from models.user import user_model
+recruiters = user_model.get_recruiters()
+
+if recruiters:
+    leaderboard_data = []
+
+    for recruiter in recruiters:
+        # Get all candidates for this recruiter
+        recruiter_candidates = candidate_model.search({'recruiter_id': recruiter['id']})
+
+        total_candidates = len(recruiter_candidates)
+
+        # Count by status
+        hired_count = len([c for c in recruiter_candidates if c.get('status') == 'Hired'])
+        interview_count = len([c for c in recruiter_candidates if c.get('status') == 'Interview'])
+        offer_count = len([c for c in recruiter_candidates if c.get('status') == 'Offer'])
+        rejected_count = len([c for c in recruiter_candidates if c.get('status') == 'Rejected'])
+
+        # Calculate success rate
+        success_rate = (hired_count / total_candidates * 100) if total_candidates > 0 else 0
+
+        # Calculate conversion rate (Interview or beyond / Total)
+        conversion_count = interview_count + offer_count + hired_count
+        conversion_rate = (conversion_count / total_candidates * 100) if total_candidates > 0 else 0
+
+        leaderboard_data.append({
+            'recruiter': recruiter['full_name'],
+            'total': total_candidates,
+            'hired': hired_count,
+            'interview': interview_count,
+            'offer': offer_count,
+            'rejected': rejected_count,
+            'success_rate': success_rate,
+            'conversion_rate': conversion_rate
+        })
+
+    # Sort by success rate, then by total candidates
+    leaderboard_data.sort(key=lambda x: (x['success_rate'], x['total']), reverse=True)
+
+    # Display leaderboard cards
+    for idx, data in enumerate(leaderboard_data, 1):
+        # Medal emoji for top 3
+        if idx == 1:
+            medal = "🥇"
+            border_color = "#FFD700"  # Gold
+        elif idx == 2:
+            medal = "🥈"
+            border_color = "#C0C0C0"  # Silver
+        elif idx == 3:
+            medal = "🥉"
+            border_color = "#CD7F32"  # Bronze
+        else:
+            medal = f"#{idx}"
+            border_color = "#e5e7eb"
+
+        st.markdown(f"""
+        <div style='background: white; padding: 20px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 6px solid {border_color};'>
+            <div style='display: flex; justify-content: space-between; align-items: center;'>
+                <div style='display: flex; align-items: center; gap: 15px;'>
+                    <span style='font-size: 36px;'>{medal}</span>
+                    <div>
+                        <h3 style='margin: 0; color: #1f2937;'>{data['recruiter']}</h3>
+                        <p style='margin: 5px 0 0 0; color: #6b7280; font-size: 14px;'>Total Candidates: {data['total']}</p>
+                    </div>
+                </div>
+                <div style='text-align: right;'>
+                    <div style='display: flex; gap: 20px;'>
+                        <div>
+                            <p style='margin: 0; color: #6b7280; font-size: 12px;'>Success Rate</p>
+                            <p style='margin: 5px 0 0 0; color: #10b981; font-size: 24px; font-weight: 700;'>{data['success_rate']:.1f}%</p>
+                        </div>
+                        <div>
+                            <p style='margin: 0; color: #6b7280; font-size: 12px;'>Conversion Rate</p>
+                            <p style='margin: 5px 0 0 0; color: #6366f1; font-size: 24px; font-weight: 700;'>{data['conversion_rate']:.1f}%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style='margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb;'>
+                <div style='display: flex; gap: 20px; justify-content: space-around;'>
+                    <div style='text-align: center;'>
+                        <p style='margin: 0; color: #6b7280; font-size: 12px;'>✅ Hired</p>
+                        <p style='margin: 5px 0 0 0; color: #10b981; font-size: 20px; font-weight: 600;'>{data['hired']}</p>
+                    </div>
+                    <div style='text-align: center;'>
+                        <p style='margin: 0; color: #6b7280; font-size: 12px;'>📋 Offer</p>
+                        <p style='margin: 5px 0 0 0; color: #8b5cf6; font-size: 20px; font-weight: 600;'>{data['offer']}</p>
+                    </div>
+                    <div style='text-align: center;'>
+                        <p style='margin: 0; color: #6b7280; font-size: 12px;'>💼 Interview</p>
+                        <p style='margin: 5px 0 0 0; color: #f59e0b; font-size: 20px; font-weight: 600;'>{data['interview']}</p>
+                    </div>
+                    <div style='text-align: center;'>
+                        <p style='margin: 0; color: #6b7280; font-size: 12px;'>❌ Rejected</p>
+                        <p style='margin: 5px 0 0 0; color: #ef4444; font-size: 20px; font-weight: 600;'>{data['rejected']}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Summary statistics
+    st.markdown("---")
+    st.markdown("### 📊 Leaderboard Summary")
+
+    summary_col1, summary_col2, summary_col3, summary_col4 = st.columns(4)
+
+    total_all_candidates = sum(d['total'] for d in leaderboard_data)
+    total_hired = sum(d['hired'] for d in leaderboard_data)
+    avg_success_rate = sum(d['success_rate'] for d in leaderboard_data) / len(leaderboard_data) if leaderboard_data else 0
+    top_recruiter = leaderboard_data[0]['recruiter'] if leaderboard_data else "N/A"
+
+    with summary_col1:
+        st.metric("Total Active Recruiters", len(leaderboard_data))
+
+    with summary_col2:
+        st.metric("Total Candidates Managed", total_all_candidates)
+
+    with summary_col3:
+        st.metric("Total Hires", total_hired)
+
+    with summary_col4:
+        st.metric("Average Success Rate", f"{avg_success_rate:.1f}%")
+
+else:
+    st.info("No recruiters found. Add recruiters in the Settings page.")
+
 # Recent Activity
 st.markdown("---")
 st.subheader("📞 Recent Interactions")
