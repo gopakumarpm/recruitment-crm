@@ -158,7 +158,7 @@ if recruiters:
             border_color = "#e5e7eb"
 
         st.markdown(f"""
-        <div style='background: white; padding: 20px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 6px solid {border_color};'>
+        <div style='background: rgba(240, 249, 255, 0.75); padding: 20px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 6px solid {border_color}; backdrop-filter: blur(10px);'>
             <div style='display: flex; justify-content: space-between; align-items: center;'>
                 <div style='display: flex; align-items: center; gap: 15px;'>
                     <span style='font-size: 36px;'>{medal}</span>
