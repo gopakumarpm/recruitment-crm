@@ -80,7 +80,46 @@ st.markdown("""
     }
 
     [data-testid="stSidebar"] [data-testid="stMarkdown"] {
-        color: white;
+        color: white !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stMarkdown"] p {
+        color: white !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stMarkdown"] h1,
+    [data-testid="stSidebar"] [data-testid="stMarkdown"] h2,
+    [data-testid="stSidebar"] [data-testid="stMarkdown"] h3 {
+        color: white !important;
+    }
+
+    /* Sidebar navigation links */
+    [data-testid="stSidebar"] .css-17lntkn,
+    [data-testid="stSidebar"] a,
+    [data-testid="stSidebar"] span {
+        color: white !important;
+    }
+
+    /* Page navigation */
+    section[data-testid="stSidebar"] nav a {
+        color: white !important;
+    }
+
+    section[data-testid="stSidebar"] nav a:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+    }
+
+    /* All sidebar text elements */
+    [data-testid="stSidebar"] * {
+        color: white !important;
+    }
+
+    /* Sidebar links and buttons */
+    [data-testid="stSidebar"] button {
+        color: white !important;
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
     }
 
     /* Headers */
