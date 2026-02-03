@@ -18,6 +18,127 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Modern CSS styling
+st.markdown("""
+<style>
+    /* Main app styling */
+    .stApp {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    /* Card styling */
+    .stForm, .element-container {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Button styling */
+    .stButton > button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 24px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    /* Input fields */
+    .stTextInput > div > div > input,
+    .stTextArea > div > div > textarea,
+    .stSelectbox > div > div > select {
+        border-radius: 10px;
+        border: 2px solid #e5e7eb;
+        padding: 10px;
+        transition: border-color 0.3s ease;
+    }
+
+    .stTextInput > div > div > input:focus,
+    .stTextArea > div > div > textarea:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    /* Metrics */
+    [data-testid="stMetricValue"] {
+        font-size: 32px;
+        font-weight: 700;
+        color: #667eea;
+    }
+
+    /* Sidebar */
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+    }
+
+    [data-testid="stSidebar"] [data-testid="stMarkdown"] {
+        color: white;
+    }
+
+    /* Headers */
+    h1 {
+        color: #1f2937;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    h2, h3 {
+        color: #374151;
+        font-weight: 700;
+    }
+
+    /* Success/Error messages */
+    .stSuccess, .stError, .stWarning, .stInfo {
+        border-radius: 10px;
+        padding: 15px;
+    }
+
+    /* Dataframe */
+    .dataframe {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Tabs */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+        background-color: transparent;
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        border-radius: 10px 10px 0 0;
+        padding: 12px 24px;
+        font-weight: 600;
+        background-color: #f3f4f6;
+        transition: all 0.3s ease;
+    }
+
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    /* Expander */
+    .streamlit-expanderHeader {
+        border-radius: 10px;
+        background-color: #f9fafb;
+        font-weight: 600;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 def init_app():
     """Initialize the application and database."""
     # Check if database exists, if not create it
@@ -27,19 +148,31 @@ def init_app():
 
 def show_login_page():
     """Display the login page."""
-    st.title("🔐 Recruitment CRM Login")
-    st.markdown("---")
+    # Hero section
+    st.markdown("""
+    <div style='text-align: center; padding: 40px 0 20px 0;'>
+        <h1 style='font-size: 48px; margin-bottom: 10px;'>👥 Recruitment CRM</h1>
+        <p style='font-size: 20px; color: #6b7280;'>Streamline your recruitment process</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns([1, 2, 1])
 
     with col2:
+        # Login card
+        st.markdown("""
+        <div style='background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);'>
+        </div>
+        """, unsafe_allow_html=True)
+
         with st.form("login_form"):
-            st.subheader("Welcome Back!")
+            st.markdown("<h2 style='text-align: center; margin-bottom: 30px;'>🔐 Welcome Back!</h2>", unsafe_allow_html=True)
 
-            username = st.text_input("Username", placeholder="Enter your username")
-            password = st.text_input("Password", type="password", placeholder="Enter your password")
+            username = st.text_input("👤 Username", placeholder="Enter your username", label_visibility="visible")
+            password = st.text_input("🔒 Password", type="password", placeholder="Enter your password", label_visibility="visible")
 
-            submit = st.form_submit_button("Login", use_container_width=True)
+            st.markdown("<br>", unsafe_allow_html=True)
+            submit = st.form_submit_button("🚀 Login", use_container_width=True, type="primary")
 
             if submit:
                 if not username or not password:
@@ -54,13 +187,16 @@ def show_login_page():
                     else:
                         st.error("Invalid username or password.")
 
-        st.info("""
-        **Default Admin Credentials:**
-        - Username: `admin`
-        - Password: `admin123`
-
-        ⚠️ Please change the default password after first login!
-        """)
+        st.markdown("""
+        <div style='margin-top: 30px; padding: 20px; background: linear-gradient(135deg, #667eea15, #764ba215); border-radius: 15px; border-left: 4px solid #667eea;'>
+            <p style='margin: 0; font-weight: 600; color: #374151;'>🔑 Default Admin Credentials:</p>
+            <p style='margin: 10px 0 0 0; color: #6b7280;'>
+                • Username: <code style='background: #f3f4f6; padding: 2px 8px; border-radius: 4px;'>admin</code><br>
+                • Password: <code style='background: #f3f4f6; padding: 2px 8px; border-radius: 4px;'>admin123</code>
+            </p>
+            <p style='margin: 15px 0 0 0; color: #ef4444; font-size: 14px;'>⚠️ Please change the default password after first login!</p>
+        </div>
+        """, unsafe_allow_html=True)
 
 def show_welcome_page():
     """Display the welcome page after login."""
@@ -68,25 +204,33 @@ def show_welcome_page():
 
     # Sidebar user info and logout
     with st.sidebar:
-        st.markdown(f"### 👤 {user['full_name']}")
-        st.markdown(f"**Role:** {user['role'].capitalize()}")
-        st.markdown(f"**Email:** {user['email']}")
-        st.markdown("---")
+        st.markdown(f"""
+        <div style='background: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 15px; margin-bottom: 20px; backdrop-filter: blur(10px);'>
+            <h3 style='color: white; margin: 0 0 10px 0;'>👤 {user['full_name']}</h3>
+            <p style='color: rgba(255,255,255,0.9); margin: 5px 0;'><strong>Role:</strong> {user['role'].capitalize()}</p>
+            <p style='color: rgba(255,255,255,0.9); margin: 5px 0; font-size: 14px;'><strong>Email:</strong> {user['email']}</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-        if st.button("🚪 Logout", use_container_width=True):
+        if st.button("🚪 Logout", use_container_width=True, type="primary"):
             session.clear_session()
             st.rerun()
 
-        st.markdown("---")
-        st.markdown(f"**{APP_NAME}** v{APP_VERSION}")
+        st.markdown("<br><br>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color: rgba(255,255,255,0.7); text-align: center; font-size: 14px;'><strong>{APP_NAME}</strong> v{APP_VERSION}</p>", unsafe_allow_html=True)
 
-    # Main welcome content
-    st.title(f"👥 Welcome to {APP_NAME}")
-    st.markdown(f"### Hello, {user['full_name']}!")
-    st.markdown("---")
+    # Main welcome content with hero section
+    st.markdown(f"""
+    <div style='text-align: center; padding: 20px 0;'>
+        <h1 style='font-size: 42px; margin-bottom: 10px;'>👥 Welcome to {APP_NAME}</h1>
+        <p style='font-size: 24px; color: #6b7280;'>Hello, {user['full_name']}! 👋</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # Quick stats
-    st.subheader("📊 Quick Stats")
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Quick stats with modern cards
+    st.markdown("<h2 style='margin-bottom: 30px;'>📊 Quick Stats</h2>", unsafe_allow_html=True)
 
     col1, col2, col3, col4 = st.columns(4)
 
@@ -97,17 +241,21 @@ def show_welcome_page():
         screening = db.execute_query("SELECT COUNT(*) as count FROM candidates WHERE status = 'Screening'")[0]['count']
         interview = db.execute_query("SELECT COUNT(*) as count FROM candidates WHERE status = 'Interview'")[0]['count']
 
-        with col1:
-            st.metric("Total Candidates", total_candidates)
+        metrics = [
+            ("👥 Total Candidates", total_candidates, "#667eea"),
+            ("📝 Applied", applied, "#10b981"),
+            ("🔍 Screening", screening, "#f59e0b"),
+            ("💼 Interview", interview, "#8b5cf6")
+        ]
 
-        with col2:
-            st.metric("Applied", applied)
-
-        with col3:
-            st.metric("Screening", screening)
-
-        with col4:
-            st.metric("Interview", interview)
+        for col, (label, value, color) in zip([col1, col2, col3, col4], metrics):
+            with col:
+                st.markdown(f"""
+                <div style='background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; border-top: 4px solid {color};'>
+                    <p style='color: #6b7280; font-size: 14px; margin: 0 0 10px 0; font-weight: 600;'>{label}</p>
+                    <h2 style='color: {color}; font-size: 36px; margin: 0; font-weight: 800;'>{value}</h2>
+                </div>
+                """, unsafe_allow_html=True)
 
     except Exception as e:
         st.warning("Unable to load statistics. The database may be initializing.")
