@@ -200,7 +200,7 @@ def show_login_page():
     with col2:
         # Login card
         st.markdown("""
-        <div style='background: rgba(249, 250, 251, 0.95); padding: 40px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); backdrop-filter: blur(10px);'>
+        <div style='background: rgba(240, 249, 255, 0.85); padding: 40px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); backdrop-filter: blur(10px);'>
         </div>
         """, unsafe_allow_html=True)
 
@@ -290,7 +290,7 @@ def show_welcome_page():
         for col, (label, value, color) in zip([col1, col2, col3, col4], metrics):
             with col:
                 st.markdown(f"""
-                <div style='background: rgba(255, 255, 255, 0.7); padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; border-top: 4px solid {color}; transition: transform 0.3s ease; backdrop-filter: blur(10px);'>
+                <div style='background: rgba(240, 249, 255, 0.75); padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; border-top: 4px solid {color}; transition: transform 0.3s ease; backdrop-filter: blur(10px);'>
                     <p style='color: #6b7280; font-size: 14px; margin: 0 0 10px 0; font-weight: 600;'>{label}</p>
                     <h2 style='color: {color}; font-size: 36px; margin: 0; font-weight: 800;'>{value}</h2>
                 </div>
