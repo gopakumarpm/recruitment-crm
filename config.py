@@ -15,8 +15,9 @@ DATABASE_PATH = DATABASE_DIR / "recruitment.db"
 DATABASE_DIR.mkdir(exist_ok=True)
 
 # Application settings
-APP_NAME = "Recruitment CRM"
-APP_VERSION = "1.0.0"
+APP_NAME = "Hiremind-Pro"
+APP_TAGLINE = "Smart Recruitment, Smarter Decisions"
+APP_VERSION = "2.0.0"
 
 # Session settings
 SESSION_TIMEOUT_HOURS = 24

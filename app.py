@@ -8,7 +8,7 @@ from database.schema import initialize_database
 from auth.authenticator import auth
 from auth.session_manager import session
 from database.db_manager import db
-from config import APP_NAME, APP_VERSION, DATABASE_PATH
+from config import APP_NAME, APP_TAGLINE, APP_VERSION, DATABASE_PATH
 
 # Page configuration
 st.set_page_config(
@@ -23,7 +23,7 @@ st.markdown("""
 <style>
     /* Main app styling */
     .stApp {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
     }
 
     /* Card styling */
@@ -36,19 +36,19 @@ st.markdown("""
 
     /* Button styling */
     .stButton > button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
         color: white;
         border: none;
         border-radius: 10px;
         padding: 12px 24px;
         font-weight: 600;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
     }
 
     .stButton > button:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
     }
 
     /* Input fields */
@@ -63,20 +63,20 @@ st.markdown("""
 
     .stTextInput > div > div > input:focus,
     .stTextArea > div > div > textarea:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        border-color: #10B981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
     }
 
     /* Metrics */
     [data-testid="stMetricValue"] {
         font-size: 32px;
         font-weight: 700;
-        color: #667eea;
+        color: #10B981;
     }
 
     /* Sidebar */
     [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(180deg, #10B981 0%, #059669 100%);
     }
 
     [data-testid="stSidebar"] [data-testid="stMarkdown"] {
@@ -126,7 +126,7 @@ st.markdown("""
     h1 {
         color: #1f2937;
         font-weight: 800;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -165,7 +165,7 @@ st.markdown("""
     }
 
     .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
         color: white;
     }
 
@@ -188,10 +188,10 @@ def init_app():
 def show_login_page():
     """Display the login page."""
     # Hero section
-    st.markdown("""
+    st.markdown(f"""
     <div style='text-align: center; padding: 40px 0 20px 0;'>
-        <h1 style='font-size: 48px; margin-bottom: 10px;'>👥 Recruitment CRM</h1>
-        <p style='font-size: 20px; color: #6b7280;'>Streamline your recruitment process</p>
+        <h1 style='font-size: 48px; margin-bottom: 10px;'>🎯 {APP_NAME}</h1>
+        <p style='font-size: 20px; color: #6b7280;'>{APP_TAGLINE}</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -227,7 +227,7 @@ def show_login_page():
                         st.error("Invalid username or password.")
 
         st.markdown("""
-        <div style='margin-top: 30px; padding: 20px; background: linear-gradient(135deg, #667eea15, #764ba215); border-radius: 15px; border-left: 4px solid #667eea;'>
+        <div style='margin-top: 30px; padding: 20px; background: linear-gradient(135deg, #10B98115, #05966915); border-radius: 15px; border-left: 4px solid #10B981;'>
             <p style='margin: 0; font-weight: 600; color: #374151;'>🔑 Default Admin Credentials:</p>
             <p style='margin: 10px 0 0 0; color: #6b7280;'>
                 • Username: <code style='background: #f3f4f6; padding: 2px 8px; border-radius: 4px;'>admin</code><br>
@@ -281,16 +281,16 @@ def show_welcome_page():
         interview = db.execute_query("SELECT COUNT(*) as count FROM candidates WHERE status = 'Interview'")[0]['count']
 
         metrics = [
-            ("👥 Total Candidates", total_candidates, "#667eea"),
-            ("📝 Applied", applied, "#10b981"),
+            ("👥 Total Candidates", total_candidates, "#10B981"),
+            ("📝 Applied", applied, "#059669"),
             ("🔍 Screening", screening, "#f59e0b"),
-            ("💼 Interview", interview, "#8b5cf6")
+            ("💼 Interview", interview, "#6366f1")
         ]
 
         for col, (label, value, color) in zip([col1, col2, col3, col4], metrics):
             with col:
                 st.markdown(f"""
-                <div style='background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; border-top: 4px solid {color};'>
+                <div style='background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; border-top: 4px solid {color}; transition: transform 0.3s ease;'>
                     <p style='color: #6b7280; font-size: 14px; margin: 0 0 10px 0; font-weight: 600;'>{label}</p>
                     <h2 style='color: {color}; font-size: 36px; margin: 0; font-weight: 800;'>{value}</h2>
                 </div>
