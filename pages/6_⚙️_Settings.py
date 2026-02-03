@@ -33,10 +33,11 @@ st.markdown("---")
 
 # Tabs based on role
 if user_role == 'admin':
-    tab1, tab2 = st.tabs(["👤 Profile", "👥 User Management"])
+    tab1, tab2, tab3 = st.tabs(["👤 Profile", "👥 User Management", "🔄 Reassign Candidates"])
 else:
     tab1 = st.tabs(["👤 Profile"])[0]
     tab2 = None
+    tab3 = None
 
 # TAB 1: User Profile
 with tab1:
@@ -205,3 +206,168 @@ if tab2 is not None:
                                 st.rerun()
                             else:
                                 st.error("Failed to update status.")
+
+                    # Delete User Section
+                    st.markdown("---")
+                    st.markdown("### 🗑️ Delete User")
+                    st.warning(f"⚠️ Are you sure you want to delete **{selected_user['full_name']}**? This action cannot be undone!")
+
+                    # Check if user has assigned candidates
+                    from models.candidate import candidate_model
+                    assigned_candidates = candidate_model.search({'recruiter_id': selected_user_id})
+
+                    if assigned_candidates:
+                        st.info(f"📋 This user has {len(assigned_candidates)} candidate(s) assigned. Deleting will unassign these candidates.")
+
+                    if st.button("🗑️ Delete User", type="secondary", key="delete_user_btn"):
+                        if selected_user_id == current_user['id']:
+                            st.error("❌ You cannot delete your own account!")
+                        else:
+                            if user_model.delete(selected_user_id):
+                                st.success(f"✅ User '{selected_user['full_name']}' deleted successfully!")
+                                st.rerun()
+                            else:
+                                st.error("❌ Failed to delete user.")
+
+# TAB 3: Reassign Candidates (Admin only)
+if tab3 is not None:
+    with tab3:
+        st.subheader("🔄 Reassign Candidates Between Recruiters")
+
+        from models.candidate import candidate_model
+
+        # Get all recruiters
+        recruiters = user_model.get_recruiters()
+
+        if len(recruiters) < 2:
+            st.warning("⚠️ You need at least 2 recruiters to reassign candidates.")
+        else:
+            # Create two columns for from/to selection
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.markdown("### 📤 From Recruiter")
+                recruiter_options = {r['id']: r['full_name'] for r in recruiters}
+                recruiter_options[None] = "Unassigned Candidates"
+
+                from_recruiter_id = st.selectbox(
+                    "Select Source Recruiter",
+                    options=list(recruiter_options.keys()),
+                    format_func=lambda x: recruiter_options[x],
+                    key="from_recruiter"
+                )
+
+            with col2:
+                st.markdown("### 📥 To Recruiter")
+                to_recruiter_options = {r['id']: r['full_name'] for r in recruiters if r['id'] != from_recruiter_id}
+
+                if to_recruiter_options:
+                    to_recruiter_id = st.selectbox(
+                        "Select Target Recruiter",
+                        options=list(to_recruiter_options.keys()),
+                        format_func=lambda x: to_recruiter_options[x],
+                        key="to_recruiter"
+                    )
+                else:
+                    st.info("Select a different source recruiter")
+                    to_recruiter_id = None
+
+            st.markdown("---")
+
+            # Show candidates assigned to selected recruiter
+            if from_recruiter_id is not None or from_recruiter_id is None:
+                st.subheader("📋 Candidates to Reassign")
+
+                # Get candidates for selected recruiter
+                if from_recruiter_id is None:
+                    candidates = candidate_model.search({'recruiter_id': None})
+                    candidates = [c for c in candidate_model.get_all() if c.get('recruiter_id') is None]
+                else:
+                    candidates = candidate_model.search({'recruiter_id': from_recruiter_id})
+
+                if not candidates:
+                    st.info(f"No candidates assigned to {recruiter_options[from_recruiter_id]}")
+                else:
+                    st.info(f"Found {len(candidates)} candidate(s)")
+
+                    # Display candidates
+                    df = pd.DataFrame(candidates)
+                    display_cols = ['id', 'first_name', 'last_name', 'email', 'status', 'position_applied']
+                    display_cols = [col for col in display_cols if col in df.columns]
+
+                    if display_cols:
+                        st.dataframe(df[display_cols], use_container_width=True, hide_index=True)
+
+                    # Reassignment options
+                    st.markdown("---")
+                    st.subheader("🔄 Reassignment Options")
+
+                    col_a, col_b = st.columns(2)
+
+                    with col_a:
+                        # Bulk reassign all
+                        if st.button(f"🔄 Reassign All {len(candidates)} Candidates", use_container_width=True, type="primary"):
+                            if to_recruiter_id is None:
+                                st.error("Please select a target recruiter")
+                            else:
+                                success_count = 0
+                                for candidate in candidates:
+                                    candidate_data = dict(candidate)
+                                    candidate_data['recruiter_id'] = to_recruiter_id
+                                    if candidate_model.update(candidate['id'], candidate_data):
+                                        success_count += 1
+
+                                if success_count == len(candidates):
+                                    st.success(f"✅ Successfully reassigned {success_count} candidate(s) to {to_recruiter_options.get(to_recruiter_id)}!")
+                                    st.rerun()
+                                else:
+                                    st.warning(f"⚠️ Reassigned {success_count} out of {len(candidates)} candidates")
+
+                    with col_b:
+                        # Individual reassignment
+                        if candidates:
+                            candidate_options = {c['id']: f"{c['first_name']} {c['last_name']}" for c in candidates}
+
+                            selected_candidate_id = st.selectbox(
+                                "Or select individual candidate",
+                                options=list(candidate_options.keys()),
+                                format_func=lambda x: candidate_options[x]
+                            )
+
+                            if st.button("🔄 Reassign Selected Candidate", use_container_width=True):
+                                if to_recruiter_id is None:
+                                    st.error("Please select a target recruiter")
+                                else:
+                                    selected_candidate = next((c for c in candidates if c['id'] == selected_candidate_id), None)
+                                    if selected_candidate:
+                                        candidate_data = dict(selected_candidate)
+                                        candidate_data['recruiter_id'] = to_recruiter_id
+                                        if candidate_model.update(selected_candidate_id, candidate_data):
+                                            st.success(f"✅ Reassigned {candidate_options[selected_candidate_id]} to {to_recruiter_options.get(to_recruiter_id)}!")
+                                            st.rerun()
+                                        else:
+                                            st.error("❌ Failed to reassign candidate")
+
+            # Quick Stats
+            st.markdown("---")
+            st.subheader("📊 Candidate Distribution by Recruiter")
+
+            recruiter_stats = []
+            for recruiter in recruiters:
+                count = len(candidate_model.search({'recruiter_id': recruiter['id']}))
+                recruiter_stats.append({
+                    'Recruiter': recruiter['full_name'],
+                    'Candidates': count
+                })
+
+            # Add unassigned count
+            all_candidates = candidate_model.get_all()
+            unassigned_count = len([c for c in all_candidates if c.get('recruiter_id') is None])
+            recruiter_stats.append({
+                'Recruiter': 'Unassigned',
+                'Candidates': unassigned_count
+            })
+
+            if recruiter_stats:
+                df_stats = pd.DataFrame(recruiter_stats)
+                st.dataframe(df_stats, use_container_width=True, hide_index=True)
